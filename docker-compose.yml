@@ -1,0 +1,56 @@
+version: '3.6'
+services:
+  eureka-server:
+    build: ./movies-registry
+    container_name: eureka-server
+    ports:
+      - '8761:8761'
+    environment:
+      - APPLICATION_NAME=eureka-server
+      - SERVER_PORT=8761
+      - REGISTER_WITH_EUREKA=false
+      - FETCH_REGISTRY=false
+  booking-service:
+    build: ./booking-service
+    restart: on-failure
+    container_name: booking-service
+    depends_on:
+      - eureka-server
+    ports:
+      - '9091:9091'
+    environment:
+      - APPLICATION_NAME=booking-service
+      - SERVER_PORT=9091
+      - REGISTER_WITH_EUREKA=true
+      - FETCH_REGISTRY=true
+      - DEFAULT_ZONE=http://eureka-server:8761/eureka
+  payment-servicee:
+    build: ./payment-servicee
+    restart: on-failure
+    container_name: payment-servicee
+    depends_on:
+       - eureka-server
+
+    ports:
+      - '9090:9090'
+    environment:
+      - APPLICATION_NAME=payment-servicee
+      - SERVER_PORT=9090
+      - REGISTER_WITH_EUREKA=true
+      - FETCH_REGISTRY=true
+      - DEFAULT_ZONE=http://eureka-server:8761/eureka
+  api-gateway-service:
+    build: ./api-gateway-service
+    restart: on-failure
+    container_name: api-gateway-service
+    depends_on:
+      - eureka-server
+
+    ports:
+      - '8765:8765'
+    environment:
+      - APPLICATION_NAME=api-gateway-service
+      - SERVER_PORT=8765
+      - REGISTER_WITH_EUREKA=true
+      - FETCH_REGISTRY=true
+      - DEFAULT_ZONE=http://eureka-server:8761/eureka

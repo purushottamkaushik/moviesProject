@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: ${APPLICATION_NAME:api-gateway-service}
+  cloud:
+    gateway:
+      routes:
+        - id: booking-service
+          uri: http://localhost:9091
+          predicates:
+            - Path=/booking/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                - name: booking-fallback
+                  fallbackUri: forward:/fallbackBooking
+eureka:
+    client:
+      register-with-eureka: ${REGISTER_WITH_EUREKA:true}
+      eureka.client.fetch-registry: ${FETCH_REGISTRY:true}
+    serviceurl:
+      defaultZone: http://eureka-server:8761/eureka
+server:
+  port: ${SERVER_PORT:8765}
+

@@ -1,0 +1,1 @@
+spring.application.name=${APPLICATION_NAME:notification-service}

@@ -1,0 +1,25 @@
+spring:
+  application:
+     name: ${APPLICATION_NAME:payment-servicee}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/{MYSQL_DB:payments}?createDatabaseIfNotExist=true
+    username: ${USERNAME:root}
+    password: ${PASSWORD:mysql}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: ${SERVER_PORT:9090}
+eureka:
+  client:
+     register-with-eureka: ${REGISTER_WITH_EUREKA:true}
+     fetch-registry: ${FETCH_REGISTRY:true}
+     serviceurl:
+         defaultZone:
+            http://localhost:8761/eureka
+
+stripe:
+  key: sk_test_51PF8ExSC93b1n3DmUSI4ODTkoypA4hKkeWvfPHrWs8TcXm0xMtNxSDXSUEpraXVAD3mfRMyTgNXiNrgD5Qfd0lfo0080Lbbkbv
