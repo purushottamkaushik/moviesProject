@@ -5,22 +5,25 @@ import com.movie.ticket.booking.system.bookingservice.broker.PaymentBrokerServic
 import com.movie.ticket.booking.system.bookingservice.dto.BookingDTO;
 import com.movie.ticket.booking.system.bookingservice.dto.BookingStatus;
 import com.movie.ticket.booking.system.bookingservice.entity.BookingEntity;
+import com.movie.ticket.booking.system.bookingservice.kafka.publisher.BookingServicePublisher;
 import com.movie.ticket.booking.system.bookingservice.repo.BookingRepository;
-import com.movie.ticket.booking.system.bookingservice.service.PaymentService;
+import com.movie.ticket.booking.system.bookingservice.service.BookingService;
 
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.util.Optional;
 
 
 @Service
-public class PaymentServiceImpl implements PaymentService {
+public class PaymentServiceImpl implements BookingService {
 
     @Autowired private BookingRepository bookingRepository;
     @Autowired private PaymentBrokerService paymentBrokerService;
+
+    @Autowired private BookingServicePublisher bookingServicePublisher;
 
     @Override
     @Transactional
@@ -37,18 +40,24 @@ public class PaymentServiceImpl implements PaymentService {
 
         bookingEntity = this.bookingRepository.save(bookingEntity);
 
-      bookingDTO =   this.paymentBrokerService.makePayment(bookingDTO);
+//      bookingDTO =   this.paymentBrokerService.makePayment(bookingDTO);
+        bookingDTO.setBookingId(bookingEntity.getBookingId());
+        this.bookingServicePublisher.sendPaymentRequest(bookingDTO);
       bookingEntity.setBookingStatus(bookingDTO.getBookingStatus());
 //        this.paymentBrokerService.
 
-        return BookingDTO.builder()
-                .movieId(bookingEntity.getMovieId())
-                .showDate(bookingEntity.getShowDate())
-                .showTime(bookingEntity.getShowTime())
-                .seatsBooked(bookingEntity.getSeatsBooked())
-                .bookingStatus(bookingEntity.getBookingStatus())
-                .bookingAmount(bookingEntity.getBookingAmount())
-                .build();
+        return bookingDTO;
+
+    }
+
+    @Override
+    @Transactional
+    public void processPayment(BookingDTO bookingDTO) {
+        Optional<BookingEntity> bookingEntityOptional = this.bookingRepository.findById(bookingDTO.getBookingId());
+        if (bookingEntityOptional.isPresent()){
+            BookingEntity bookingEntity = bookingEntityOptional.get();
+            bookingEntity.setBookingStatus(bookingDTO.getBookingStatus());
+        }
 
     }
 }

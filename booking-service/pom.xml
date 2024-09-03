@@ -43,10 +43,19 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.6.11</version>
         </dependency>
+
+
+
+        clean verify sonar:sonar -Dsonar.projectKey=medilab -Dsonar.projectName='medilab' -Dsonar.host.url=http://3.111.187.237:9000 -Dsonar.token=sqp_0146c660f7c3757a3341b26050b68b286dae8730
 
         <dependency>
             <groupId>com.mysql</groupId>

@@ -34,7 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         this.paymentRepository.save(paymentEntity);
 
-        PaymentStatus paymentStatus = stripePaymentService.makePayment(paymentEntity.getPaymentAmount());
+        PaymentStatus paymentStatus = stripePaymentService.makePayment(bookingDTO);
 
         if (paymentStatus.equals(PaymentStatus.SUCCESS)) {
             paymentEntity.setPaymentStatus(PaymentStatus.SUCCESS);

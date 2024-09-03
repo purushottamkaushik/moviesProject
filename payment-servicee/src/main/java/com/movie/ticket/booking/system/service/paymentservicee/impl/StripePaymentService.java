@@ -1,6 +1,8 @@
 package com.movie.ticket.booking.system.service.paymentservicee.impl;
 
 
+import com.movie.ticket.booking.system.service.paymentservicee.dto.BookingDTO;
+import com.movie.ticket.booking.system.service.paymentservicee.dto.BookingStatus;
 import com.movie.ticket.booking.system.service.paymentservicee.dto.PaymentStatus;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
@@ -16,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class StripePaymentService {
 
 
-    @Value("${stripe.key")
+    @Value("${stripe.key}")
     private String apiKey;
 
     StripePaymentService(){
@@ -27,18 +29,17 @@ public class StripePaymentService {
         Stripe.apiKey = apiKey;
     }
 
-    public PaymentStatus makePayment(Double amount){
-
-
-
+    public PaymentStatus makePayment(BookingDTO bookingDTO){
         try {
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                     .setPaymentMethod("pm_card_us")
-                    .setAmount(amount.longValue())
+                    .setAmount(bookingDTO.getBookingAmount().longValue())
                     .setCurrency("usd")
 
                     .build();
             PaymentIntent paymentIntent  = PaymentIntent.create(params);
+            bookingDTO.setBookingStatus(BookingStatus.CONFIRMED);
+
             System.out.println("Payment Success");
         } catch (StripeException e) {
             log.error("Error making payment " + e.getStripeError().getMessage());

@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Builder
-public class BookingDTO {
+public class BookingDTO   {
 
     private UUID bookingId;
 
